@@ -7,12 +7,31 @@
 
 import SwiftUI
 
+
+// View for displaying the list of dessert meals
 struct MealListView: View {
+    @StateObject private var viewModel: MealsViewModel
+    
+    init(mealService: MealService) {
+        _viewModel = StateObject(wrappedValue: MealsViewModel(mealService: mealService))
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            List(viewModel.meals) { meal in
+                NavigationLink(destination: MealDetailView(mealId: meal.idMeal, mealService: viewModel.mealService)) {
+                    MealRowView(meal: meal)
+                }
+            }
+            .navigationTitle("Desserts")
+            .onAppear {
+                viewModel.fetchDesserts()
+            }
+        }
     }
 }
 
 #Preview {
-    MealListView()
+    MealListView(mealService: SampleData.sampleMealService)
 }
+
